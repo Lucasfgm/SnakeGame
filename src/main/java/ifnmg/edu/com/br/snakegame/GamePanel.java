@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -18,6 +19,7 @@ import javax.swing.JPanel;
  * @author Lucas Flavio<lucasfgm at ifnmg.edu.br>
  */
 public class GamePanel extends JPanel implements ActionListener {
+
 
     static final int SCREEN_WIDTH = 600;
     static final int SCREEN_HEIGHT = 600;
@@ -34,6 +36,8 @@ public class GamePanel extends JPanel implements ActionListener {
     boolean running = false;
     Timer timer;
     Random random;
+
+    
 
     GamePanel() {
         random = new Random();
@@ -59,35 +63,34 @@ public class GamePanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
-     if(running){
-         /*
+        if (running) {
+            /*
         for (int i = 0; i < SCREEN_HEIGHT / UNIT_SIZE; i++) {
             g.drawLine(i * UNIT_SIZE, 0, i * UNIT_SIZE, SCREEN_HEIGHT);
             g.drawLine(0, i * UNIT_SIZE, i * SCREEN_WIDTH, i * UNIT_SIZE);
         }
-        */
-        g.setColor(Color.red);
-        g.fillOval(dotX, dotY, UNIT_SIZE, UNIT_SIZE);
+             */
+            g.setColor(Color.red);
+            g.fillOval(dotX, dotY, UNIT_SIZE, UNIT_SIZE);
 
-        for (int i = 0; i < bodyParts; i++) {
-            if (i == 0) {
-                g.setColor(Color.cyan);
-                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
-            } else {
-                g.setColor(Color.cyan);
-                g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+            for (int i = 0; i < bodyParts; i++) {
+                if (i == 0) {
+                    g.setColor(Color.cyan);
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                } else {
+                    g.setColor(Color.cyan);
+                    g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+                }
             }
+            g.setColor(Color.green);
+            g.setFont(new Font("Ink Free", Font.BOLD, 40));
+            FontMetrics metrics = getFontMetrics(g.getFont());
+            g.drawString("Score: " + dotsEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " + dotsEaten)) / 2, g.getFont().getSize());
+
+        } else {
+            gameOver(g);
         }
-        g.setColor(Color.green);
-        g.setFont(new Font("Ink Free",Font.BOLD,40));
-        FontMetrics metrics = getFontMetrics(g.getFont());
-        g.drawString("Score: " + dotsEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: " +dotsEaten))/2,g.getFont().getSize());
-        
-    }
-     else{
-         gameOver(g);
-     }
-     
+
     }
 
     public void newDot() {
@@ -159,15 +162,17 @@ public class GamePanel extends JPanel implements ActionListener {
     public void gameOver(Graphics g) {
         //Score
         g.setColor(Color.green);
-        g.setFont(new Font("Ink Free",Font.BOLD,40));
+        g.setFont(new Font("Ink Free", Font.BOLD, 40));
         FontMetrics metrics1 = getFontMetrics(g.getFont());
-        g.drawString("Score: " + dotsEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: " +dotsEaten))/2,g.getFont().getSize());
+        g.drawString("Score: " + dotsEaten, (SCREEN_WIDTH - metrics1.stringWidth("Score: " + dotsEaten)) / 2, g.getFont().getSize());
         //Game Over Texto
         g.setColor(Color.green);
-        g.setFont(new Font("Ink Free",Font.BOLD,75));
+        g.setFont(new Font("Ink Free", Font.BOLD, 75));
         FontMetrics metrics2 = getFontMetrics(g.getFont());
-        g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
-        
+        g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over")) / 2, SCREEN_HEIGHT / 2);
+        g.setFont(new Font("Courier New", Font.PLAIN, 20));
+        FontMetrics metrics3 = getFontMetrics(g.getFont());
+        g.drawString("Press 'R' to play again",(SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to play again"))/2,SCREEN_HEIGHT/2 + 70);
     }
 
     @Override
@@ -180,6 +185,16 @@ public class GamePanel extends JPanel implements ActionListener {
         }
         repaint();
 
+    }
+    
+    public void closeRunningWindow(KeyEvent e) {
+        JComponent comp = (JComponent) e.getSource();
+        Window win = SwingUtilities.getWindowAncestor(comp);
+        win.dispose();
+    }
+    
+    public void restartGame(){
+        GameFrame frame = new GameFrame();
     }
 
     public class MyKeyAdapter extends KeyAdapter {
@@ -207,8 +222,11 @@ public class GamePanel extends JPanel implements ActionListener {
                         direction = 'D';
                     }
                     break;
-
             }
+           if (e.getKeyCode() == KeyEvent.VK_R) {
+                   closeRunningWindow(e);
+                   restartGame();
+                }
         }
 
     }
